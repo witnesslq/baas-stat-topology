@@ -34,7 +34,7 @@ public class StatResult {
         for (Map.Entry<String, ServiceStatConfig> entry : config.getServiceStatConfigs().entrySet()) {
             ServiceStatResult serviceStatResult = serviceStatResultMap.get(entry.getKey());
             if (serviceStatResult == null) {
-                serviceStatResult = loadServiceStatResult();
+                throw new RuntimeException("Failed to load the statID[" + entry + "]");
             }
 
             serviceStatResult.stat(entry.getValue(), tupleData);
@@ -44,9 +44,6 @@ public class StatResult {
         hasBeenStatTuples.add(input);
     }
 
-    private ServiceStatResult loadServiceStatResult() {
-        return null;
-    }
 
     public void saveStatResult(Connection connection) throws SQLException {
         for (Map.Entry<String, ServiceStatResult> entry : serviceStatResultMap.entrySet()) {
@@ -60,7 +57,7 @@ public class StatResult {
         for (Map.Entry<String, ServiceStatConfig> entry : config.getServiceStatConfigs().entrySet()) {
             statResult.serviceStatResultMap.put(
                     entry.getKey(),
-                    ServiceStatResult.load(entry.getValue(),tupleData)
+                    ServiceStatResult.load(entry.getValue(), tupleData)
             );
         }
         return statResult;

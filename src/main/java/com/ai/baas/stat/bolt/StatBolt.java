@@ -61,45 +61,7 @@ public class StatBolt extends BaseRichBolt {
                 throw new RuntimeException("Failed to convert tuple data to map.", e);
             }
 
-            Map<String, String> tupleData = messageParser.getData();
-            String key = tupleData.get(BaseConstants.TENANT_ID) + tupleData.get(BaseConstants.SERVICE_ID);
-            StatConfig config = statRules.get(key);
-            // 不存在
-            if (config == null) {
-                try {
-                    config = DBUtils.loadStatConfig(tupleData.get(BaseConstants.TENANT_ID),
-                            tupleData.get(BaseConstants.SERVICE_ID));
-                } catch (Exception e) {
-                    logger.error("Failed to load the stat rule of  tenantId[{}] serviceType[{}].",
-                            tupleData.get(BaseConstants.TENANT_ID), tupleData.get(BaseConstants.SERVICE_ID), e);
-                    throw new RuntimeException("Failed to load the stat rule.", e);
-                }
-                statRules.put(key, config);
-            }
-
-
-            StatResult statResult = statResultMap.get(key);
-            if (statResult == null) {
-                try {
-                    statResult = StatResult.load(config, tupleData);
-                } catch (Exception e) {
-                    logger.error("Failed to load the stat result of config[{}].",
-                            tupleData.get(BaseConstants.TENANT_ID), tupleData.get(BaseConstants.SERVICE_ID), config, e);
-                    throw new RuntimeException("Failed to load the stat result of config", e);
-                }
-            }
-
-            try {
-                statResult.stat(config, input);
-            } catch (Exception e) {
-                logger.error("Failed to stat result of config[{}].tupleData[{}]", config, input, e);
-                throw new RuntimeException("Failed to stat result of config");
-            }
-
-            if (statResultMap.size() > 5) {
-                DBUtils.batchSaveStatResult(statResultMap);
-            }
-
+            doStatAction(input, messageParser.getData());
         } catch (Exception e) {
             //TODO 入错单
             
@@ -108,6 +70,46 @@ public class StatBolt extends BaseRichBolt {
         }
 
 
+    }
+
+    private void doStatAction(Tuple input, Map<String, String> tupleData) {
+        String key = tupleData.get(BaseConstants.TENANT_ID) + tupleData.get(BaseConstants.SERVICE_ID);
+        StatConfig config = statRules.get(key);
+        // 不存在
+        if (config == null) {
+            try {
+                config = DBUtils.loadStatConfig(tupleData.get(BaseConstants.TENANT_ID),
+                        tupleData.get(BaseConstants.SERVICE_ID));
+            } catch (Exception e) {
+                logger.error("Failed to load the stat rule of  tenantId[{}] serviceType[{}].",
+                        tupleData.get(BaseConstants.TENANT_ID), tupleData.get(BaseConstants.SERVICE_ID), e);
+                throw new RuntimeException("Failed to load the stat rule.", e);
+            }
+            statRules.put(key, config);
+        }
+
+
+        StatResult statResult = statResultMap.get(key);
+        if (statResult == null) {
+            try {
+                statResult = StatResult.load(config, tupleData);
+            } catch (Exception e) {
+                logger.error("Failed to load the stat result of config[{}].",
+                        tupleData.get(BaseConstants.TENANT_ID), tupleData.get(BaseConstants.SERVICE_ID), config, e);
+                throw new RuntimeException("Failed to load the stat result of config", e);
+            }
+        }
+
+        try {
+            statResult.stat(config, input);
+        } catch (Exception e) {
+            logger.error("Failed to stat result of config[{}].tupleData[{}]", config, input, e);
+            throw new RuntimeException("Failed to stat result of config");
+        }
+
+        if (statResultMap.size() > 5) {
+            DBUtils.batchSaveStatResult(statResultMap);
+        }
     }
 
     @Override

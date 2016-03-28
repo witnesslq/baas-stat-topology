@@ -45,7 +45,7 @@ public class DBUtils {
         ps.setString(2, serviceType);
 
         ResultSet resultSet = ps.executeQuery();
-        StatConfig statConfig = new StatConfig();
+        StatConfig statConfig = new StatConfig(tenantId, serviceType);
         while (resultSet.next()) {
             statConfig.addServiceStatConfig(new ServiceStatConfig(
                     resultSet.getString(MysqlTableMetaData.STAT_ACC_RULE.FIELDS.TABLE_NAME),

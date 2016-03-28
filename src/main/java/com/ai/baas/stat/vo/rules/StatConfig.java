@@ -5,10 +5,14 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class StatConfig {
+    private String tenantId;
+    private String serviceType;
     //key :statID
     private Map<String, ServiceStatConfig> serviceStatConfigs;
 
-    public StatConfig() {
+    public StatConfig(String tenantId, String serviceType) {
+        this.tenantId = tenantId;
+        this.serviceType = serviceType;
         serviceStatConfigs = new HashMap<String, ServiceStatConfig>();
     }
 
@@ -26,5 +30,13 @@ public class StatConfig {
         return "StatConfig{" +
                 "serviceStatConfigs=" + serviceStatConfigs +
                 '}';
+    }
+
+    public String getServiceType() {
+        return serviceType;
+    }
+
+    public String getTenantId() {
+        return tenantId;
     }
 }
