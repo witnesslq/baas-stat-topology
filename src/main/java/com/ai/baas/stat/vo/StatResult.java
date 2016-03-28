@@ -34,7 +34,7 @@ public class StatResult {
         for (Map.Entry<String, ServiceStatConfig> entry : config.getServiceStatConfigs().entrySet()) {
             ServiceStatResult serviceStatResult = serviceStatResultMap.get(entry.getKey());
             if (serviceStatResult == null) {
-                throw new RuntimeException("Failed to load the statID[" + entry + "]");
+                throw new RuntimeException("Failed to load the statID[" + entry.getKey() + "]");
             }
 
             serviceStatResult.stat(entry.getValue(), tupleData);
