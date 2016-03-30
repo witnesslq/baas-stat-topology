@@ -5,7 +5,7 @@ import com.ai.baas.stat.vo.StatResult;
 import com.ai.baas.stat.vo.StatResultItem;
 import com.ai.baas.stat.vo.rules.ServiceStatConfig;
 import com.ai.baas.stat.vo.rules.StatConfig;
-import com.ai.baas.storm.jdbc.Connector;
+import com.ai.baas.storm.failbill.FailBillHandler;
 import com.ai.baas.storm.jdbc.JdbcProxy;
 import com.ai.baas.storm.util.BaseConstants;
 import org.apache.logging.log4j.LogManager;
@@ -33,7 +33,7 @@ public class DBUtils {
 
     static {
         try {
-            connection =  JdbcProxy.getConnection(BaseConstants.JDBC_DEFAULT);
+            connection = JdbcProxy.getConnection(BaseConstants.JDBC_DEFAULT);
         } catch (Exception e) {
             throw new RuntimeException("Failed to get the DB connection", e);
         }
@@ -100,10 +100,12 @@ public class DBUtils {
         Iterator<String> iterator = statResultMap.keySet().iterator();
         while (iterator.hasNext()) {
             String key = iterator.next();
+            StatResult statResult = statResultMap.get(key);
             try {
-                statResultMap.get(key).saveStatResult(connection);
+                if (statResult != null)
+                    statResult.saveStatResult(connection);
             } catch (Exception e) {
-                // TODO 入错单
+                statResult.doSaveFailedBill(e);
             } finally {
                 iterator.remove();
                 logger.info("{} has been remove from stat result map, current result map size: {}",

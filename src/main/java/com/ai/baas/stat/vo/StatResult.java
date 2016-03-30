@@ -3,15 +3,13 @@ package com.ai.baas.stat.vo;
 import backtype.storm.tuple.Tuple;
 import com.ai.baas.stat.vo.rules.ServiceStatConfig;
 import com.ai.baas.stat.vo.rules.StatConfig;
+import com.ai.baas.storm.failbill.FailBillHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by xin on 16-3-23.
@@ -61,5 +59,13 @@ public class StatResult {
             );
         }
         return statResult;
+    }
+
+    public void doSaveFailedBill(Exception e) {
+        Iterator<Tuple> tupleIterable = hasBeenStatTuples.iterator();
+        while (tupleIterable.hasNext()) {
+            Tuple tuple = tupleIterable.next();
+            FailBillHandler.addFailBillMsg(tuple.getString(0), "Stat", "500", e.getMessage());
+        }
     }
 }

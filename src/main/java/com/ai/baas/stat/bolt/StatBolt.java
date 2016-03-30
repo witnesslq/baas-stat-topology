@@ -9,6 +9,7 @@ import backtype.storm.tuple.Tuple;
 import com.ai.baas.stat.util.DBUtils;
 import com.ai.baas.stat.vo.StatResult;
 import com.ai.baas.stat.vo.rules.StatConfig;
+import com.ai.baas.storm.failbill.FailBillHandler;
 import com.ai.baas.storm.jdbc.JdbcProxy;
 import com.ai.baas.storm.message.MappingRule;
 import com.ai.baas.storm.message.MessageParser;
@@ -42,6 +43,7 @@ public class StatBolt extends BaseRichBolt {
         statRules = new HashMap<String, StatConfig>();
         statResultMap = new HashMap<String, StatResult>();
         JdbcProxy.loadDefaultResource(stormConf);
+        FailBillHandler.startup();
         this.outputCollector = collector;
     }
 
@@ -63,8 +65,8 @@ public class StatBolt extends BaseRichBolt {
 
             doStatAction(input, messageParser.getData());
         } catch (Exception e) {
-            //TODO 入错单
-            
+            logger.error("Failed to stat the {}", input.getString(0), e);
+            FailBillHandler.addFailBillMsg(input.getString(0), "Stat", "500", e.getMessage());
         } finally {
             outputCollector.ack(input);
         }
