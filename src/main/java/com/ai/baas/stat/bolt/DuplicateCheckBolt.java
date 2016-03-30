@@ -9,6 +9,7 @@ import backtype.storm.tuple.Tuple;
 import com.ai.baas.storm.duplicate.DuplicateCheckingConfig;
 import com.ai.baas.storm.duplicate.DuplicateCheckingFromHBase;
 import com.ai.baas.storm.duplicate.IDuplicateChecking;
+import com.ai.baas.storm.failbill.FailBillHandler;
 import com.ai.baas.storm.message.MappingRule;
 import com.ai.baas.storm.message.MessageParser;
 import com.ai.baas.storm.util.BaseConstants;
@@ -33,6 +34,7 @@ public class DuplicateCheckBolt extends BaseRichBolt {
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
         DuplicateCheckingConfig.getInstance();
         this.collector = collector;
+        FailBillHandler.startup();
         duplicateChecking = new DuplicateCheckingFromHBase();
     }
 
@@ -52,8 +54,7 @@ public class DuplicateCheckBolt extends BaseRichBolt {
                 }
             }
         } catch (Exception e) {
-            //logger.error("Failed to convert tuple data to map", e);
-            //TODO 入错单
+            FailBillHandler.addFailBillMsg(input.getString(0), "Stat", "500", e.getMessage());
             collector.ack(input);
         }
 
