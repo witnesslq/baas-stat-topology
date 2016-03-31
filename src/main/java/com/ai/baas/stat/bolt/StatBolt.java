@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class StatBolt extends BaseRichBolt {
 
@@ -34,6 +35,7 @@ public class StatBolt extends BaseRichBolt {
     private OutputCollector outputCollector;
     private MappingRule[] mappingRules = new MappingRule[2];
     private String[] outputFields;
+    private AtomicInteger index = new AtomicInteger();
 
     @Override
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
@@ -95,6 +97,7 @@ public class StatBolt extends BaseRichBolt {
         if (statResult == null) {
             try {
                 statResult = StatResult.load(config, tupleData);
+                statResultMap.put(key, statResult);
             } catch (Exception e) {
                 logger.error("Failed to load the stat result of config[{}].",
                         tupleData.get(BaseConstants.TENANT_ID), tupleData.get(BaseConstants.SERVICE_ID), config, e);
@@ -104,13 +107,15 @@ public class StatBolt extends BaseRichBolt {
 
         try {
             statResult.stat(config, input);
+            index.getAndDecrement();
         } catch (Exception e) {
             logger.error("Failed to stat result of config[{}].tupleData[{}]", config, input, e);
             throw new RuntimeException("Failed to stat result of config");
         }
 
-        if (statResultMap.size() > 5) {
+        if (index.get() > 5) {
             DBUtils.batchSaveStatResult(statResultMap);
+            index.set(0);
         }
     }
 
