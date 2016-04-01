@@ -1,0 +1,63 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'maven-publish'
+
+sourceCompatibility = 1.7
+ 
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+ 
+group = 'com.ai.baas'
+ 
+repositories {
+    maven{ url "http://10.1.228.199:18081/nexus/content/groups/public/"  }
+    maven{ url "http://10.1.228.199:18081/nexus/content/repositories/conjars/"  }
+}
+
+configurations.all {
+	resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
+ext {
+        moduleName="baas-stat-topo";
+        moduleVersion="1.0-SNAPSHOT"
+        publishUserName = "devadm"
+        publishUserPassword = "Devadm@1212"
+        publishURL="http://10.1.228.199:18081/nexus/content/repositories/snapshots/"
+        builtBy="gradle 2.1"
+    }
+
+
+configurations {
+   provided
+   compile.extendsFrom provided
+}
+
+dependencies{
+    compile 'com.ai.baas.storm:baas-storm:0.1.2-SNAPSHOT'
+    testCompile 'junit:junit:4.12'
+    compile 'org.apache.logging.log4j:log4j-core:2.5'
+}
+
+jar {
+	baseName moduleName
+    version moduleVersion
+    dependsOn configurations.runtime
+    from {
+        (configurations.runtime - configurations.provided).collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+    {
+    	exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+    }
+          
+}
+
+sourceSets {
+    main {
+        java { srcDirs = ['src/main/java']}
+        resources { srcDirs = ['src/main/resources']}
+    }
+}
