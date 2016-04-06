@@ -44,7 +44,7 @@ jdbc.default: "{\"jdbc.driver\":\"com.mysql.jdbc.Driver\",\"jdbc.url\":\"jdbc:my
 #kafka.spout.zk.port: "2181"
 
 kafka.spout.consumer.addr: "10.1.130.84:49181,10.1.130.85:49181,10.1.236.122:49181"
-kafka.spout.topic: "bmckafka"
+kafka.spout.topic: "stat-test-topic"
 kafka.spout.zk.server: "10.1.130.84,10.1.130.85,10.1.236.122"
 kafka.spout.zk.port: "49181"
 kafka.spout.parallel.num: 1
