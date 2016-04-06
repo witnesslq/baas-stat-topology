@@ -112,12 +112,12 @@ public class StatBolt extends BaseRichBolt {
 
         try {
             statResult.stat(config, tupleData, input);
-            index.getAndDecrement();
+            index.getAndIncrement();
         } catch (Exception e) {
             logger.error("Failed to stat result of config[{}].tupleData[{}]", config, input, e);
             throw new RuntimeException("Failed to stat result of config");
         }
-
+        System.out.println("Index : " + index);
         if (index.get() > 5) {
             DBUtils.batchSaveStatResult(statResultMap);
             index.set(0);
