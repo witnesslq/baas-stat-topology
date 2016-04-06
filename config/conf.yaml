@@ -1,0 +1,59 @@
+topology.name: "StatTopology"
+topology.workers: 1
+topology.max.spout.pending: 2
+#topology.acker.executors: 6
+#topology.debug: false
+#bolt.slow.down: false
+#spout.parallel: 6
+#bolt.parallel: 12
+#send.sleep.second: 100
+#check.sequence: true
+#kryo.enable: true
+#fall.back.on.java.serialization: true
+
+#enable.split: false
+#topology.performance.metrics: true
+
+#topology.debug: false
+#topology.debug.recv.tuple: false
+#spout.single.thread: true
+
+topology.enable.classloader: false
+#worker.stop.without.supervisor: false
+
+#spout.max.sending.num: 2000000
+#worker.redirect.output.file: /proc/mounts
+
+#spout.pending.full.sleep: true
+
+#user.defined.log4j.conf: my.log4j.properties
+#isolation.scheduler.machines:
+#    - free-56-156.shucang.alipay.net
+#    - 10.209.69.27
+
+#user.defined.logback.conf: "jstorm.logback.2.xml"
+storm.cluster.mode: local
+
+jdbc.default: "{\"jdbc.driver\":\"com.mysql.jdbc.Driver\",\"jdbc.url\":\"jdbc:mysql://10.1.235.245:31306/dev_baas_stat1?useUnicode=true&characterEncoding=UTF-8\",\"jdbc.username\":\"statusr01\",\"jdbc.password\":\"statusr01_123\"}"
+
+
+#kafka spout
+#kafka.spout.consumer.addr: "node01:2181,node02:2181,node03:2181"
+#kafka.spout.topic: "mykafka"
+#kafka.spout.zk.server: "node01,node02,node03"
+#kafka.spout.zk.port: "2181"
+
+kafka.spout.consumer.addr: "10.1.130.84:49181,10.1.130.85:49181,10.1.236.122:49181"
+kafka.spout.topic: "bmckafka"
+kafka.spout.zk.server: "10.1.130.84,10.1.130.85,10.1.236.122"
+kafka.spout.zk.port: "49181"
+kafka.spout.parallel.num: 1
+
+hbase.param: "{\"hbase.zookeeper.property.clientPort\":\"49181\",\"hbase.master\":\"BIU-DEV-BaaS-app1\",\"hbase.zookeeper.quorum\":\"BIU-DEV-BaaS-app1,BIU-DEV-BaaS-app2,BIU-DEV-BaaS-app3\"}"
+
+bmc.gprs.bolt.output.field: {"unpacking":"service_id,tenant_id,sn,data","duplicate_checking":"data","rule_adapt":"data","billing":"data"}
+
+#ccs config
+ccs.appname: "aiopt-baas-dshm"
+ccs.zk_address: "10.1.130.84:39181"
+
