@@ -30,9 +30,11 @@ public class BaasClientProducer {
         busData.append("test0").append(FIELD_SPLIT);
         busData.append(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date(System.currentTimeMillis()))).append(FIELD_SPLIT);
         busData.append(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date(System.currentTimeMillis()))).append(FIELD_SPLIT);
+        //
         busData.append("zx").append(FIELD_SPLIT);
         busData.append("bj").append(FIELD_SPLIT);
         busData.append("10").append(FIELD_SPLIT);
+
         return busData.substring(0, busData.length() - 1).toString();
     }
 
