@@ -34,7 +34,7 @@ public class StatBolt extends BaseRichBolt {
     private Map<String, StatResult> statResultMap;
 
     private OutputCollector outputCollector;
-    private MappingRule[] mappingRules = new MappingRule[2];
+    private MappingRule[] mappingRules = new MappingRule[1];
     private String[] outputFields = new String[]{BaseConstants.RECORD_DATA};
     private AtomicInteger index = new AtomicInteger();
 
@@ -42,12 +42,11 @@ public class StatBolt extends BaseRichBolt {
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
         JdbcProxy.loadDefaultResource(stormConf);
         HBaseProxy.loadResource(stormConf);
+        FailBillHandler.startup();
         mappingRules[0] = MappingRule.getMappingRule(MappingRule.FORMAT_TYPE_INPUT, BaseConstants.JDBC_DEFAULT);
-        mappingRules[1] = mappingRules[0];
 
         statRules = new HashMap<String, StatConfig>();
         statResultMap = new HashMap<String, StatResult>();
-        FailBillHandler.startup();
         this.outputCollector = collector;
     }
 
@@ -57,9 +56,13 @@ public class StatBolt extends BaseRichBolt {
             MessageParser messageParser = null;
             try {
                 String line = input.getStringByField(BaseConstants.RECORD_DATA);
-                String[] inputDatas = StringUtils.splitPreserveAllTokens(line, BaseConstants.RECORD_SPLIT);
+                String[] inputDataArr = StringUtils.splitPreserveAllTokens(line, BaseConstants.RECORD_SPLIT);
 
-                for (String inputData : inputDatas) {
+                if (inputDataArr == null) {
+                    throw new RuntimeException("Tuple data is null");
+                }
+
+                for (String inputData : inputDataArr) {
                     messageParser = MessageParser.parseObject(inputData, mappingRules, outputFields);
                 }
             } catch (Exception e) {
@@ -115,7 +118,7 @@ public class StatBolt extends BaseRichBolt {
             throw new RuntimeException("Failed to stat result of config");
         }
 
-        if (index.get() <= 1) {
+        if (index.get() > 5) {
             DBUtils.batchSaveStatResult(statResultMap);
             index.set(0);
         }

@@ -20,7 +20,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -57,11 +56,6 @@ public class DuplicateCheckBolt extends BaseRichBolt {
             for (String inputData : inputDatas) {
                 logger.debug("input Data : {}", inputData);
                 messageParser = MessageParser.parseObject(inputData, mappingRules, outputFields);
-                messageParser.getData();
-                List<Object> values = messageParser.toTupleData();
-                if (CollectionUtils.isNotEmpty(values)) {
-                    collector.emit(values);
-                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -69,15 +63,12 @@ public class DuplicateCheckBolt extends BaseRichBolt {
             collector.ack(input);
         }
 
-        System.out.println("do duplicate action :" + messageParser.getData());
-
         try {
             if (!duplicateChecking.checkData(messageParser.getData())) {
-                List<Object> fields = new ArrayList<Object>();
-                fields.add(messageParser.getData().get(BaseConstants.TENANT_ID));
-                fields.add(messageParser.getData().get(BaseConstants.SERVICE_ID));
-                fields.add(messageParser.getData().get(BaseConstants.RECORD_DATA));
-                collector.emit(input, fields);
+                List<Object> values = messageParser.toTupleData();
+                if (CollectionUtils.isNotEmpty(values)) {
+                    collector.emit(values);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
