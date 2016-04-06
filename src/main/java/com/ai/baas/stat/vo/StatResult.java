@@ -26,9 +26,7 @@ public class StatResult {
         serviceStatResultMap = new HashMap<String, ServiceStatResult>();
     }
 
-    public void stat(StatConfig config, Tuple input) throws SQLException, ClassNotFoundException {
-        Map<String, String> tupleData = new HashMap<String, String>();
-
+    public void stat(StatConfig config, Map<String, String> tupleData, Tuple input) throws SQLException, ClassNotFoundException {
         for (Map.Entry<String, ServiceStatConfig> entry : config.getServiceStatConfigs().entrySet()) {
             ServiceStatResult serviceStatResult = serviceStatResultMap.get(entry.getKey());
             if (serviceStatResult == null) {

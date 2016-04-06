@@ -27,7 +27,7 @@ public class DBUtils {
 
     private static final String LOAD_STAT_CONFIG_BY_TENANTID_AND_SERIVCETYPE
             = "SELECT " +
-            "TENANT_ID, SERVICE_TYPE, STAT_ID,TABLE_NAME,GROUP_FIELDS,ACC_FIELDS,TABLE_NAME_RULE_TYPE " +
+            "TENANT_ID, SERVICE_TYPE, STAT_ID,TABLE_NAME,GROUP_FIELDS,ACCU_FIELDS,TABLE_NAME_RULE_TYPE " +
             "FROM stat_accu_rule " +
             "WHERE  TENANT_ID = ? AND SERVICE_TYPE = ?";
 
@@ -84,7 +84,7 @@ public class DBUtils {
     private static String generateStatResultSQL(String tableName, List<String> statFields, Set<String> groupFields) {
         StringBuilder stringBuilder = new StringBuilder("SELECT ");
         for (String statField : statFields) {
-            stringBuilder.append(statField + ", ");
+            stringBuilder.append(statField + ",");
         }
         stringBuilder = stringBuilder.deleteCharAt(stringBuilder.length() - 1);
         stringBuilder.append(" FROM " + tableName);

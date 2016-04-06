@@ -3,6 +3,7 @@ package com.ai.baas.stat;
 import com.ai.baas.stat.bolt.DuplicateCheckBolt;
 import com.ai.baas.stat.bolt.StatBolt;
 import com.ai.baas.storm.flow.BaseFlow;
+import com.ai.baas.storm.util.BaseConstants;
 
 public class StatFlow extends BaseFlow {
 
@@ -11,8 +12,9 @@ public class StatFlow extends BaseFlow {
 
     @Override
     public void define() {
-        builder.setBolt(duplicateCheckBoltId, new DuplicateCheckBolt());
-        builder.setBolt(stateBoltId, new StatBolt());
+        super.setKafkaSpout();
+        builder.setBolt(duplicateCheckBoltId, new DuplicateCheckBolt()).shuffleGrouping(BaseConstants.KAFKA_SPOUT_NAME);
+        builder.setBolt(stateBoltId, new StatBolt()).shuffleGrouping(duplicateCheckBoltId);
     }
 
     public static void main(String[] args) {

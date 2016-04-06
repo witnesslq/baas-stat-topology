@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class ServiceStatResult {
 
-    private Map<String, StatResultItem> statResults;
+    private Map<String, StatResultItem> statResults = new HashMap<String, StatResultItem>();
 
     public void stat(ServiceStatConfig config, Map<String, String> tupleData) throws SQLException, ClassNotFoundException {
         String groupKey = generateGroupKey(config, tupleData);
@@ -36,7 +36,6 @@ public class ServiceStatResult {
         for (String groupField : config.getGroupFields()) {
             String groupFieldValue = tupleData.get(groupField);
             if (groupFieldValue == null || groupFieldValue.length() == 0) {
-                //TODO 入错单
             }
             groupFieldValueMapping.put(groupField, tupleData.get(groupField));
         }

@@ -51,7 +51,7 @@ public class StatResultItem {
 
             return stringBuilder.deleteCharAt(stringBuilder.length() - 1)
                     .append(") VALUES(")
-                    .append(valueBuilder.deleteCharAt(valueBuilder.length() - 1)).toString();
+                    .append(valueBuilder.deleteCharAt(valueBuilder.length() - 1)).append(")").toString();
         } else {
             StringBuilder stringBuilder = new StringBuilder("UPDATE " + tableName + " SET ");
             for (String key : statResultMap.keySet()) {
@@ -67,6 +67,10 @@ public class StatResultItem {
 
     public void stat(Map<String, String> tupleData) {
         for (Map.Entry<String, Double> entry : statResultMap.entrySet()) {
+            if (tupleData.get(entry.getKey()) == null) {
+                throw new RuntimeException(entry.getKey() + " is null");
+            }
+
             double result = Double.parseDouble(tupleData.get(entry.getKey()));
             statResultMap.put(entry.getKey(), entry.getValue() + result);
         }
@@ -95,7 +99,7 @@ public class StatResultItem {
             }
         }
 
-        preparedStatement.execute();
-
+        preparedStatement.executeUpdate();
+        connection.commit();
     }
 }

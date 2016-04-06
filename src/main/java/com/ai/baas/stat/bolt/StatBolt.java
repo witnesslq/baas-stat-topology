@@ -14,6 +14,7 @@ import com.ai.baas.storm.jdbc.JdbcProxy;
 import com.ai.baas.storm.message.MappingRule;
 import com.ai.baas.storm.message.MessageParser;
 import com.ai.baas.storm.util.BaseConstants;
+import com.ai.baas.storm.util.HBaseProxy;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,17 +35,18 @@ public class StatBolt extends BaseRichBolt {
 
     private OutputCollector outputCollector;
     private MappingRule[] mappingRules = new MappingRule[2];
-    private String[] outputFields =  new String[]{BaseConstants.RECORD_DATA};
+    private String[] outputFields = new String[]{BaseConstants.RECORD_DATA};
     private AtomicInteger index = new AtomicInteger();
 
     @Override
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
+        JdbcProxy.loadDefaultResource(stormConf);
+        HBaseProxy.loadResource(stormConf);
         mappingRules[0] = MappingRule.getMappingRule(MappingRule.FORMAT_TYPE_INPUT, BaseConstants.JDBC_DEFAULT);
         mappingRules[1] = mappingRules[0];
 
         statRules = new HashMap<String, StatConfig>();
         statResultMap = new HashMap<String, StatResult>();
-        JdbcProxy.loadDefaultResource(stormConf);
         FailBillHandler.startup();
         this.outputCollector = collector;
     }
@@ -54,7 +56,7 @@ public class StatBolt extends BaseRichBolt {
         try {
             MessageParser messageParser = null;
             try {
-                String line = input.getString(0);
+                String line = input.getStringByField(BaseConstants.RECORD_DATA);
                 String[] inputDatas = StringUtils.splitPreserveAllTokens(line, BaseConstants.RECORD_SPLIT);
 
                 for (String inputData : inputDatas) {
@@ -64,11 +66,11 @@ public class StatBolt extends BaseRichBolt {
                 logger.error("Failed to convert tuple data to map", e);
                 throw new RuntimeException("Failed to convert tuple data to map.", e);
             }
-
+            System.out.println("do stat action :" + messageParser.getData());
             doStatAction(input, messageParser.getData());
         } catch (Exception e) {
             logger.error("Failed to stat the {}", input.getString(0), e);
-            FailBillHandler.addFailBillMsg(input.getString(0), "Stat", "500", e.getMessage());
+            FailBillHandler.addFailBillMsg(input.getStringByField(BaseConstants.RECORD_DATA), "Stat", "500", e.getMessage());
         } finally {
             outputCollector.ack(input);
         }
@@ -106,14 +108,14 @@ public class StatBolt extends BaseRichBolt {
         }
 
         try {
-            statResult.stat(config, input);
+            statResult.stat(config, tupleData, input);
             index.getAndDecrement();
         } catch (Exception e) {
             logger.error("Failed to stat result of config[{}].tupleData[{}]", config, input, e);
             throw new RuntimeException("Failed to stat result of config");
         }
 
-        if (index.get() > 5) {
+        if (index.get() <= 1) {
             DBUtils.batchSaveStatResult(statResultMap);
             index.set(0);
         }
