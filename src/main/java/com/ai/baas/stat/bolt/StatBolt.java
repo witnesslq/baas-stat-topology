@@ -34,7 +34,7 @@ public class StatBolt extends BaseRichBolt {
 
     private OutputCollector outputCollector;
     private MappingRule[] mappingRules = new MappingRule[2];
-    private String[] outputFields;
+    private String[] outputFields =  new String[]{BaseConstants.RECORD_DATA};
     private AtomicInteger index = new AtomicInteger();
 
     @Override

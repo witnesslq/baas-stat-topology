@@ -10,6 +10,7 @@ import com.ai.baas.storm.duplicate.DuplicateCheckingConfig;
 import com.ai.baas.storm.duplicate.DuplicateCheckingFromHBase;
 import com.ai.baas.storm.duplicate.IDuplicateChecking;
 import com.ai.baas.storm.failbill.FailBillHandler;
+import com.ai.baas.storm.jdbc.JdbcProxy;
 import com.ai.baas.storm.message.MappingRule;
 import com.ai.baas.storm.message.MessageParser;
 import com.ai.baas.storm.util.BaseConstants;
@@ -34,10 +35,10 @@ public class DuplicateCheckBolt extends BaseRichBolt {
 
     @Override
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
+        JdbcProxy.loadDefaultResource(stormConf);
         DuplicateCheckingConfig.getInstance();
         FailBillHandler.startup();
         this.collector = collector;
-        FailBillHandler.startup();
         mappingRules[0] = MappingRule.getMappingRule(MappingRule.FORMAT_TYPE_INPUT, BaseConstants.JDBC_DEFAULT);
         duplicateChecking = new DuplicateCheckingFromHBase();
         outputFields = new String[]{BaseConstants.TENANT_ID, BaseConstants.SERVICE_ID, BaseConstants.RECORD_DATA};
