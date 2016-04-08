@@ -12,7 +12,7 @@ public class ServiceStatResult {
 
     private Map<String, StatResultItem> statResults = new HashMap<String, StatResultItem>();
 
-    public void stat(ServiceStatConfig config, Map<String, String> tupleData) throws SQLException, ClassNotFoundException {
+    public void stat(ServiceStatConfig config, Map<String, String> tupleData) throws Exception {
         String groupKey = generateGroupKey(config, tupleData);
         StatResultItem statResultItem = statResults.get(groupKey);
         if (statResultItem == null) {
@@ -31,7 +31,7 @@ public class ServiceStatResult {
     }
 
 
-    private StatResultItem loadStatResult(ServiceStatConfig config, Map<String, String> tupleData) throws SQLException, ClassNotFoundException {
+    private StatResultItem loadStatResult(ServiceStatConfig config, Map<String, String> tupleData) throws Exception {
         Map<String, String> groupFieldValueMapping = new HashMap<String, String>();
         for (String groupField : config.getGroupFields()) {
             String groupFieldValue = tupleData.get(groupField);
@@ -42,13 +42,13 @@ public class ServiceStatResult {
         return DBUtils.loadStatResult(config.getTableName(tupleData), config.getStatFields(), groupFieldValueMapping);
     }
 
-    public void saveStatResult(Connection connection) throws SQLException {
+    public void saveStatResult() throws Exception {
         for (Map.Entry<String, StatResultItem> entry : statResults.entrySet()) {
-            entry.getValue().saveStatResult(connection);
+            entry.getValue().saveStatResult();
         }
     }
 
-    public static ServiceStatResult load(ServiceStatConfig config, Map<String, String> tupleData) throws SQLException {
+    public static ServiceStatResult load(ServiceStatConfig config, Map<String, String> tupleData) throws Exception {
         ServiceStatResult serviceStatResult = new ServiceStatResult();
         serviceStatResult.statResults.put(
                 generateGroupKey(config, tupleData),

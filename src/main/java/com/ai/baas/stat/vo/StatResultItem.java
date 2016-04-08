@@ -1,6 +1,9 @@
 package com.ai.baas.stat.vo;
 
 
+import com.ai.baas.storm.jdbc.JdbcProxy;
+import com.ai.baas.storm.util.BaseConstants;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -76,7 +79,8 @@ public class StatResultItem {
         }
     }
 
-    public void saveStatResult(Connection connection) throws SQLException {
+    public void saveStatResult() throws Exception {
+        Connection connection = JdbcProxy.getConnection(BaseConstants.JDBC_DEFAULT);
         PreparedStatement preparedStatement = connection.prepareStatement(getExecuteSql());
         if (isNew) {
             int index = 1;
