@@ -6,8 +6,11 @@ import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
+
+import com.ai.baas.stat.constants.Constants;
 import com.ai.baas.stat.util.DBUtils;
 import com.ai.baas.stat.vo.StatResult;
+import com.ai.baas.stat.vo.rules.ServiceStatConfig;
 import com.ai.baas.stat.vo.rules.StatConfig;
 import com.ai.baas.storm.failbill.FailBillHandler;
 import com.ai.baas.storm.jdbc.JdbcProxy;
@@ -20,7 +23,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class StatBolt extends BaseRichBolt {
@@ -43,6 +49,7 @@ public class StatBolt extends BaseRichBolt {
         JdbcProxy.loadDefaultResource(stormConf);
         HBaseProxy.loadResource(stormConf);
         FailBillHandler.startup();
+        //获取映射关系
         mappingRules[0] = MappingRule.getMappingRule(MappingRule.FORMAT_TYPE_INPUT, BaseConstants.JDBC_DEFAULT);
 
         statRules = new HashMap<String, StatConfig>();
@@ -82,13 +89,16 @@ public class StatBolt extends BaseRichBolt {
     }
 
     private void doStatAction(Tuple input, Map<String, String> tupleData) {
+    	//tupleData.get(BaseConstants.SERVICE_ID) AMOUNT
         String key = tupleData.get(BaseConstants.TENANT_ID) + tupleData.get(BaseConstants.SERVICE_ID);
+        //arrival_time 硬编码
+        String date = tupleData.get(BaseConstants.ARRIVAL_TIME);
         StatConfig config = statRules.get(key);
         // 不存在
         if (config == null) {
             try {
                 config = DBUtils.loadStatConfig(tupleData.get(BaseConstants.TENANT_ID),
-                        tupleData.get(BaseConstants.SERVICE_ID));
+                        tupleData.get(BaseConstants.SERVICE_ID),date);
             } catch (Exception e) {
                 logger.error("Failed to load the stat rule of  tenantId[{}] serviceType[{}].",
                         tupleData.get(BaseConstants.TENANT_ID), tupleData.get(BaseConstants.SERVICE_ID), e);
@@ -101,8 +111,26 @@ public class StatBolt extends BaseRichBolt {
         StatResult statResult = statResultMap.get(key);
         if (statResult == null) {
             try {
-                statResult = StatResult.load(config, tupleData);
-                statResultMap.put(key, statResult);
+            	//[subs_id, cust_id, DAYNUM],,,,,
+            	//"amount"  ServiceStatConfig.statID
+            	Map<String, ServiceStatConfig> serviceStatConfigs = config.getServiceStatConfigs();
+            	Iterator<String> iterator = serviceStatConfigs.keySet().iterator();
+            	while (iterator.hasNext()) {
+					String serviceStatConfigKey = (String) iterator.next();
+					ServiceStatConfig serviceStatConfig = serviceStatConfigs.get(serviceStatConfigKey);
+		        	List<String> groupFields = serviceStatConfig.getGroupFields();
+		        	List<String> buildGroupFieldsAll = serviceStatConfig.buildGroupFieldsAll(
+		        			serviceStatConfig.getGroupFieldAll(), 
+		        			serviceStatConfig.getDate());
+		        	tupleData.put(groupFields.get(groupFields.size()-1), buildGroupFieldsAll.get(buildGroupFieldsAll.size()-1));
+		        	List<String> statFields = serviceStatConfig.getStatFields();
+		        	//statFields.get(statFields.size()-1)
+		        	List<String> buildStatFieldsAll = serviceStatConfig.buildStatFieldsAll(
+		        			serviceStatConfig.getStatFieldAll(), date);
+		        	tupleData.put(statFields.get(statFields.size()-1), tupleData.get(buildStatFieldsAll.get(buildStatFieldsAll.size()-1)));
+		            statResult = StatResult.load(config, tupleData);
+		            statResultMap.put(key, statResult);
+            	}
             } catch (Exception e) {
                 logger.error("Failed to load the stat result of config[{}].",
                         tupleData.get(BaseConstants.TENANT_ID), tupleData.get(BaseConstants.SERVICE_ID), config, e);
@@ -118,7 +146,7 @@ public class StatBolt extends BaseRichBolt {
             throw new RuntimeException("Failed to stat result of config");
         }
         System.out.println("Index : " + index);
-        if (index.get() > 5) {
+        if (index.get() >= 1) {
             DBUtils.batchSaveStatResult(statResultMap);
             index.set(0);
         }

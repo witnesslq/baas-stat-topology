@@ -29,7 +29,7 @@ public class DBUtils {
             "FROM stat_accu_rule " +
             "WHERE  TENANT_ID = ? AND SERVICE_TYPE = ?";
 
-    public static StatConfig loadStatConfig(String tenantId, String serviceType) throws Exception {
+    public static StatConfig loadStatConfig(String tenantId, String serviceType,String date) throws Exception {
         PreparedStatement ps = JdbcProxy.getConnection(BaseConstants.JDBC_DEFAULT).prepareStatement(LOAD_STAT_CONFIG_BY_TENANTID_AND_SERIVCETYPE);
         ps.setString(1, tenantId);
         ps.setString(2, serviceType);
@@ -38,6 +38,7 @@ public class DBUtils {
         StatConfig statConfig = new StatConfig(tenantId, serviceType);
         while (resultSet.next()) {
             statConfig.addServiceStatConfig(new ServiceStatConfig(
+            		date,
                     resultSet.getString(MysqlTableMetaData.STAT_ACC_RULE.FIELDS.TABLE_NAME),
                     resultSet.getString(MysqlTableMetaData.STAT_ACC_RULE.FIELDS.STAT_ID),
                     resultSet.getString(MysqlTableMetaData.STAT_ACC_RULE.FIELDS.GROUP_FIELDS),

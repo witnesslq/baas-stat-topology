@@ -2,3 +2,4 @@
 build/
 .gradle/
 baas-stat-topology.iml
+/bin/

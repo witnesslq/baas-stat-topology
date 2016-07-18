@@ -16,27 +16,58 @@ public class ServiceStatConfig {
     private TableRuleType tableRuleType;
     private List<String> groupFields;
     private List<String> statFields;
-
-    public ServiceStatConfig(String tableName, String statID, String groupFields, String statFields, String tableRuleType) {
-        this.tableName = tableName;
+    private String date;
+    private String groupFieldAll;
+    private String statFieldAll;
+    public String getGroupFieldAll() {
+		return groupFieldAll;
+	}
+	public String getStatFieldAll() {
+		return statFieldAll;
+	}
+	public String getDate() {
+		return date;
+	}
+	public ServiceStatConfig(String date,String tableName, String statID, String groupFields, String statFields, String tableRuleType) {
+        this.date = date;
+        this.groupFieldAll = groupFields;
+        this.statFieldAll = statFields;
+    	this.tableName = tableName;
         this.statID = statID;
-        this.groupFields = buildGroupFields(groupFields);
-        this.statFields = buildStatFields(statFields);
+        this.groupFields = buildGroupFields(groupFields,date);
+        this.statFields = buildStatFields(statFields,date);
         this.tableRuleType = TableRuleType.convert(tableRuleType);
     }
-
-    private List<String> buildStatFields(String statFields) {
+    public List<String> buildStatFieldsAll(String statFields,String date){
+    	 try {
+//           return Arrays.asList(statFields.split(Constants.StatTopology.STAT_RULE_FIELDS_SPILT));
+       	return Constants.getListStatFields(statFields,date);
+       } catch (Exception e) {
+           logger.error("Failed to split stat fields. Fields[{}].", statFields);
+           throw new RuntimeException("Failed to split stat fields. ");
+       }
+    }
+    private List<String> buildStatFields(String statFields,String date) {
         try {
-            return Arrays.asList(statFields.split(Constants.StatTopology.STAT_RULE_FIELDS_SPILT));
+//            return Arrays.asList(statFields.split(Constants.StatTopology.STAT_RULE_FIELDS_SPILT));
+        	return Constants.getListStatFields(statFields,date).subList(0, Constants.getListStatFields(statFields,date).size()-1);
         } catch (Exception e) {
             logger.error("Failed to split stat fields. Fields[{}].", statFields);
             throw new RuntimeException("Failed to split stat fields. ");
         }
     }
-
-    private List<String> buildGroupFields(String groupFields) {
+    public List<String> buildGroupFieldsAll(String groupFields,String date){
+   	 try {
+//          return Arrays.asList(statFields.split(Constants.StatTopology.STAT_RULE_FIELDS_SPILT));
+      	return Constants.getListStatFields(groupFields,date);
+      } catch (Exception e) {
+    	  logger.error("Failed to split group fields. Fields[{}].", groupFields);
+          throw new RuntimeException("Failed to split group fields. ");
+      }
+   }
+    private List<String> buildGroupFields(String groupFields,String date) {
         try {
-            return Arrays.asList(groupFields.split(Constants.StatTopology.STAT_RULE_FIELDS_SPILT));
+            return Constants.getListStatFields(groupFields,date).subList(0, Constants.getListStatFields(groupFields,date).size()-1);
         } catch (Exception e) {
             logger.error("Failed to split group fields. Fields[{}].", groupFields);
             throw new RuntimeException("Failed to split group fields. ");

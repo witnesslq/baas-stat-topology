@@ -7,7 +7,7 @@ import kafka.producer.KeyedMessage;
 import kafka.producer.ProducerConfig;
 
 public class ProducerProxy {
-	private static String kafka_name = "stat-test-topic-1";
+	private static String kafka_name = "stat-test-topic-4";
 	private static Producer<String, String> producer = null;
 	private static ProducerProxy instance = null;
 	
@@ -26,6 +26,7 @@ public class ProducerProxy {
 	private static void init(){
 		Properties props = new Properties();
 		props.put("metadata.broker.list", "10.1.130.84:39091");
+//		props.put("metadata.broker.list", "192.168.2.129:9092");
         props.put("serializer.class", "kafka.serializer.StringEncoder"); 
         props.put("request.required.acks", "1");
         producer = new Producer<String, String>(new ProducerConfig(props));

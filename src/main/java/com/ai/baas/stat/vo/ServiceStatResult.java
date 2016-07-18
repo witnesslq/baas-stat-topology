@@ -1,12 +1,11 @@
 package com.ai.baas.stat.vo;
 
-import com.ai.baas.stat.util.DBUtils;
-import com.ai.baas.stat.vo.rules.ServiceStatConfig;
-
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.ai.baas.stat.constants.Constants;
+import com.ai.baas.stat.util.DBUtils;
+import com.ai.baas.stat.vo.rules.ServiceStatConfig;
 
 public class ServiceStatResult {
 

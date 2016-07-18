@@ -27,13 +27,13 @@ public class BaasClientProducer {
         busData.append(service_id).append(FIELD_SPLIT);
         busData.append("TestSource").append(FIELD_SPLIT);
         busData.append("Test0").append(FIELD_SPLIT);
-        busData.append("test0").append(FIELD_SPLIT);
+        busData.append("test016").append(FIELD_SPLIT);
         busData.append(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date(System.currentTimeMillis()))).append(FIELD_SPLIT);
         busData.append(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date(System.currentTimeMillis()))).append(FIELD_SPLIT);
         //
-        busData.append("zx").append(FIELD_SPLIT);
-        busData.append("bj").append(FIELD_SPLIT);
-        busData.append("10").append(FIELD_SPLIT);
+        busData.append("li2").append(FIELD_SPLIT);
+        busData.append("3").append(FIELD_SPLIT);
+        busData.append("100").append(FIELD_SPLIT);
 
         return busData.substring(0, busData.length() - 1).toString();
     }
