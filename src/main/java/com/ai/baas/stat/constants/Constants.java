@@ -12,10 +12,6 @@ public class Constants {
     public static class TupleMappingKey {
         public static final String SERVICE_TYPE = "service_type";
     }
-
-    public static class StatTopology{
-        public static final String STAT_RULE_FIELDS_SPILT = ":";
-    }
     private static String GroupValue;
     
     public static String getGroupValue() {
@@ -33,9 +29,6 @@ public class Constants {
 			String subs = split[split.length-1];
 			String substring = subs.substring(1, subs.length()-1);
 			String[] split2 = substring.split(":");
-			/*for (int i = 0; i < split2.length; i++) {
-				System.out.println(split2[i]);
-			}*/
 			split2[0] = date;
 			StringBuilder stringBuilder = new StringBuilder();
 			if(split2[1].contains(".")){
@@ -43,9 +36,8 @@ public class Constants {
 				String[] split3 = substring4.split(";");
 				//把括号去掉
 				for (String string : split3) {
-					if (string.contains(".")) {                           //[11.15]
+					if (string.contains(".")) {                           
 						String substring3 = string.substring(1, string.length()-1);
-//							System.out.println(substring3);
 						String[] split4 = substring3.split("\\.");
 						int i1 = Integer.parseInt(String.valueOf(split4[0]));
 						int i2 = Integer.parseInt(String.valueOf(split4[1]));
@@ -57,7 +49,6 @@ public class Constants {
 					}
 				}
 				list.add(stringBuilder.toString());
-//					System.out.println(stringBuilder);
 			}else {
 				String substring4 = split2[1].substring(1, split2[1].length()-1);
 				String[] split3 = substring4.split(";");
@@ -66,7 +57,6 @@ public class Constants {
 						stringBuilder.append(string);
 					}
 				}
-//					System.out.println(split2[1]);
 				list.add(stringBuilder.toString());
 				
 			}
