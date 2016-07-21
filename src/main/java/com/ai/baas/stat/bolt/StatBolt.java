@@ -111,8 +111,7 @@ public class StatBolt extends BaseRichBolt {
         StatResult statResult = statResultMap.get(key);
         if (statResult == null) {
             try {
-            	//[subs_id, cust_id, DAYNUM],,,,,
-            	//"amount"  ServiceStatConfig.statID
+            	//将衍生字段添加进来
             	Map<String, ServiceStatConfig> serviceStatConfigs = config.getServiceStatConfigs();
             	Iterator<String> iterator = serviceStatConfigs.keySet().iterator();
             	while (iterator.hasNext()) {
@@ -124,7 +123,6 @@ public class StatBolt extends BaseRichBolt {
 		        			serviceStatConfig.getDate());
 		        	tupleData.put(groupFields.get(groupFields.size()-1), buildGroupFieldsAll.get(buildGroupFieldsAll.size()-1));
 		        	List<String> statFields = serviceStatConfig.getStatFields();
-		        	//statFields.get(statFields.size()-1)
 		        	List<String> buildStatFieldsAll = serviceStatConfig.buildStatFieldsAll(
 		        			serviceStatConfig.getStatFieldAll(), date);
 		        	tupleData.put(statFields.get(statFields.size()-1), tupleData.get(buildStatFieldsAll.get(buildStatFieldsAll.size()-1)));

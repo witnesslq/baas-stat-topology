@@ -31,7 +31,8 @@ public class BaasClientProducer {
         busData.append(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date(System.currentTimeMillis()))).append(FIELD_SPLIT);
         busData.append(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date(System.currentTimeMillis()))).append(FIELD_SPLIT);
         //
-        busData.append("li2").append(FIELD_SPLIT);
+        System.out.println(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date(System.currentTimeMillis())));
+        busData.append("LXK").append(FIELD_SPLIT);
         busData.append("3").append(FIELD_SPLIT);
         busData.append("100").append(FIELD_SPLIT);
 
