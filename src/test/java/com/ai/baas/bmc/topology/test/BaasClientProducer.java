@@ -15,13 +15,13 @@ public class BaasClientProducer {
     private String tenant_id = "TEST";
     private String fileName = "";
 
-    public void send() {
-        String message = assembleMessage();
+    public void send(String[] args) {
+        String message = assembleMessage(args);
         System.out.println("message----"+message);
         ProducerProxy.getInstance().sendMessage(message);
     }
 
-    private String assembleMessage() {
+    private String assembleMessage(String[] args) {
         StringBuilder busData = new StringBuilder();
         busData.append(tenant_id).append(FIELD_SPLIT);
         busData.append(service_id).append(FIELD_SPLIT);
@@ -32,12 +32,13 @@ public class BaasClientProducer {
         busData.append(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date(System.currentTimeMillis()))).append(FIELD_SPLIT);
         //
         System.out.println(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date(System.currentTimeMillis())));
-     /*   for (String string : args) {
+        for (String string : args) {
         	 busData.append(string).append(FIELD_SPLIT);
-		}*/
-        busData.append("Ljjjj").append(FIELD_SPLIT);
+		}
+        /*busData.append("Lxj").append(FIELD_SPLIT);
         busData.append("32").append(FIELD_SPLIT);
         busData.append("50").append(FIELD_SPLIT);
+        busData.append("20160729151356").append(FIELD_SPLIT);*/
 
         return busData.substring(0, busData.length() - 1).toString();
     }
@@ -45,7 +46,7 @@ public class BaasClientProducer {
 
     public static void main(String[] args) {
         BaasClientProducer simulator = new BaasClientProducer();
-        simulator.send();
+        simulator.send(args);
         //String[] adat = StringUtils.splitPreserveAllTokens(simulator.assembleMessage(), BaseConstants.RECORD_SPLIT);
         //System.out.println(adat.length);
     }
