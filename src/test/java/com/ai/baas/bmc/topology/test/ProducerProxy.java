@@ -7,7 +7,7 @@ import kafka.producer.KeyedMessage;
 import kafka.producer.ProducerConfig;
 
 public class ProducerProxy {
-	private static String kafka_name = "stat-test-topic-4";
+	private static String kafka_name = "stat-test-topic-5";
 	private static Producer<String, String> producer = null;
 	private static ProducerProxy instance = null;
 	

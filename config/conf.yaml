@@ -9,7 +9,7 @@ storm.cluster.mode: local
 jdbc.default: "{\"jdbc.driver\":\"com.mysql.jdbc.Driver\",\"jdbc.url\":\"jdbc:mysql://10.1.235.245:31306/dev_baas_stat1?useUnicode=true&characterEncoding=UTF-8\",\"jdbc.username\":\"statusr01\",\"jdbc.password\":\"statusr01_123\",\"autoReconnect\":true}"
 
 kafka.spout.consumer.addr: "10.1.130.84:49181,10.1.130.85:49181,10.1.236.122:49181/kfk"
-kafka.spout.topic: "stat-test-topic-4"
+kafka.spout.topic: "stat-test-topic-5"
 kafka.spout.zk.server: "10.1.130.84,10.1.130.85,10.1.236.122"
 kafka.spout.zk.port: "49181"
 kafka.spout.parallel.num: "1"

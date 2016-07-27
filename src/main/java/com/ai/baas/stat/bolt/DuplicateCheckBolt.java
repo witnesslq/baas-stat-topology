@@ -64,7 +64,9 @@ public class DuplicateCheckBolt extends BaseRichBolt {
         }
 
         try {
-            if (!duplicateChecking.checkData(messageParser.getData())) {
+        	boolean checkData = duplicateChecking.checkData(messageParser.getData());
+        	System.out.println("========="+checkData);
+            if (!checkData) {
                 List<Object> values = messageParser.toTupleData();
                 if (CollectionUtils.isNotEmpty(values)) {
                     collector.emit(values);
