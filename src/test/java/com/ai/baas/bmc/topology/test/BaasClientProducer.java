@@ -29,8 +29,10 @@ public class BaasClientProducer {
         busData.append("Test").append(FIELD_SPLIT);
         busData.append("test01").append(FIELD_SPLIT);
         busData.append(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date(System.currentTimeMillis()))).append(FIELD_SPLIT);
-        busData.append(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date(System.currentTimeMillis()))).append(FIELD_SPLIT);
+//        busData.append(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date(System.currentTimeMillis()))).append(FIELD_SPLIT);
         //
+        busData.append("20160728151310").append(FIELD_SPLIT);
+        
         System.out.println(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date(System.currentTimeMillis())));
         for (String string : args) {
         	 busData.append(string).append(FIELD_SPLIT);
