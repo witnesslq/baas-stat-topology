@@ -91,7 +91,6 @@ public class StatBolt extends BaseRichBolt {
     private void doStatAction(Tuple input, Map<String, String> tupleData) {
     	//tupleData.get(BaseConstants.SERVICE_ID) AMOUNT
         String key = tupleData.get(BaseConstants.TENANT_ID) + tupleData.get(BaseConstants.SERVICE_ID);
-        //arrival_time 硬编码
         String date = tupleData.get(BaseConstants.START_TIME);
         StatConfig config = statRules.get(key);
         // 不存在
