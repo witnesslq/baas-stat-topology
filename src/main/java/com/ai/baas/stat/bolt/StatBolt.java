@@ -91,20 +91,19 @@ public class StatBolt extends BaseRichBolt {
     private void doStatAction(Tuple input, Map<String, String> tupleData) {
     	//tupleData.get(BaseConstants.SERVICE_ID) AMOUNT
         String key = tupleData.get(BaseConstants.TENANT_ID) + tupleData.get(BaseConstants.SERVICE_ID);
-        ServiceStatConfig.date = tupleData.get(BaseConstants.START_TIME);
+        String date = tupleData.get(BaseConstants.START_TIME);
         StatConfig config = statRules.get(key);
         // 不存在
-        if (config == null) {
-            try {
-                config = DBUtils.loadStatConfig(tupleData.get(BaseConstants.TENANT_ID),
-                        tupleData.get(BaseConstants.SERVICE_ID),ServiceStatConfig.date);
-            } catch (Exception e) {
-                logger.error("Failed to load the stat rule of  tenantId[{}] serviceType[{}].",
-                        tupleData.get(BaseConstants.TENANT_ID), tupleData.get(BaseConstants.SERVICE_ID), e);
-                throw new RuntimeException("Failed to load the stat rule.", e);
-            }
-            statRules.put(key, config);
+        
+        try {
+            config = DBUtils.loadStatConfig(tupleData.get(BaseConstants.TENANT_ID),
+                    tupleData.get(BaseConstants.SERVICE_ID),date);
+        } catch (Exception e) {
+            logger.error("Failed to load the stat rule of  tenantId[{}] serviceType[{}].",
+                    tupleData.get(BaseConstants.TENANT_ID), tupleData.get(BaseConstants.SERVICE_ID), e);
+            throw new RuntimeException("Failed to load the stat rule.", e);
         }
+        statRules.put(key, config);
 
 
         StatResult statResult = statResultMap.get(key);
@@ -119,11 +118,11 @@ public class StatBolt extends BaseRichBolt {
 		        	List<String> groupFields = serviceStatConfig.getGroupFields();
 		        	List<String> buildGroupFieldsAll = serviceStatConfig.buildGroupFieldsAll(
 		        			serviceStatConfig.getGroupFieldAll(), 
-		        			serviceStatConfig.date);
+		        			serviceStatConfig.getDate());
 		        	tupleData.put(groupFields.get(groupFields.size()-1), buildGroupFieldsAll.get(buildGroupFieldsAll.size()-1));
 		        	List<String> statFields = serviceStatConfig.getStatFields();
 		        	List<String> buildStatFieldsAll = serviceStatConfig.buildStatFieldsAll(
-		        			serviceStatConfig.getStatFieldAll(), ServiceStatConfig.date);
+		        			serviceStatConfig.getStatFieldAll(), serviceStatConfig.getDate());
 		        	tupleData.put(statFields.get(statFields.size()-1), tupleData.get(buildStatFieldsAll.get(buildStatFieldsAll.size()-1)));
 		            statResult = StatResult.load(config, tupleData);
 		            statResultMap.put(key, statResult);

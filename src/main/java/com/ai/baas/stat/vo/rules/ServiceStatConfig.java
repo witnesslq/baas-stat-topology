@@ -14,10 +14,10 @@ public class ServiceStatConfig {
     private String tableName;
     private String statID;
     private TableRuleType tableRuleType;
-    private List<String> groupFields;
-    private List<String> statFields;
-    public static  String date;
-    private String groupFieldAll;
+    private static List<String> groupFields;
+    private static List<String> statFields;
+    private String date;
+    private  String groupFieldAll;
     private String statFieldAll;
    
 	public String getGroupFieldAll() {
@@ -28,13 +28,13 @@ public class ServiceStatConfig {
 	}
 	
 	public ServiceStatConfig(String date,String tableName, String statID, String groupFields, String statFields, String tableRuleType) {
-        ServiceStatConfig.date = date;
+        this.date = date;
         this.groupFieldAll = groupFields;
         this.statFieldAll = statFields;
     	this.tableName = tableName;
         this.statID = statID;
-        this.groupFields = buildGroupFields(groupFields,date);
-        this.statFields = buildStatFields(statFields,date);
+        ServiceStatConfig.groupFields = buildGroupFields(groupFields,date);
+        ServiceStatConfig.statFields = buildStatFields(statFields,date);
         this.tableRuleType = TableRuleType.convert(tableRuleType);
     }
     public List<String> buildStatFieldsAll(String statFields,String date){
@@ -64,7 +64,10 @@ public class ServiceStatConfig {
           throw new RuntimeException("Failed to split group fields. ");
       }
    }
-    private List<String> buildGroupFields(String groupFields,String date) {
+    public String getDate() {
+		return date;
+	}
+	private List<String> buildGroupFields(String groupFields,String date) {
         try {
             return Constants.getListStatFields(groupFields,date).subList(0, Constants.getListStatFields(groupFields,date).size()-1);
         } catch (Exception e) {
