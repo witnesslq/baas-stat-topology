@@ -16,20 +16,19 @@ public class ServiceStatConfig {
     private TableRuleType tableRuleType;
     private List<String> groupFields;
     private List<String> statFields;
-    private String date;
+    public static  String date;
     private String groupFieldAll;
     private String statFieldAll;
-    public String getGroupFieldAll() {
+   
+	public String getGroupFieldAll() {
 		return groupFieldAll;
 	}
 	public String getStatFieldAll() {
 		return statFieldAll;
 	}
-	public String getDate() {
-		return date;
-	}
+	
 	public ServiceStatConfig(String date,String tableName, String statID, String groupFields, String statFields, String tableRuleType) {
-        this.date = date;
+        ServiceStatConfig.date = date;
         this.groupFieldAll = groupFields;
         this.statFieldAll = statFields;
     	this.tableName = tableName;
